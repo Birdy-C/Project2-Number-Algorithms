@@ -18,9 +18,25 @@ namespace StreamCompaction {
          * (Optional) For better understanding before starting moving to GPU, you can simulate your GPU scan in this function first.
          */
         void scan(int n, int *odata, const int *idata) {
-	        timer().startCpuTimer();
+            timer().startCpuTimer();
             // TODO
-	        timer().endCpuTimer();
+            odata[0] = 0;
+            //for (int i = 1; i < n; i++)
+            //{
+            //    odata[i] = idata[i - 1] + odata[i - 1];
+            //}
+            for (int i = 1; i < n; i++)
+            {
+                odata[i] = idata[i - 1];
+            }
+            for (int d = 1; d < n; d <<= 1)
+            {
+                for (int i = n - 1; i - d >= 0; i--)
+                {
+                    odata[i] += odata[i - d];
+                }
+            }
+            timer().endCpuTimer();
         }
 
         /**
@@ -31,8 +47,16 @@ namespace StreamCompaction {
         int compactWithoutScan(int n, int *odata, const int *idata) {
 	        timer().startCpuTimer();
             // TODO
+            int number = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (idata[i])
+                {
+                    odata[number++] = idata[i];
+                }
+            }
 	        timer().endCpuTimer();
-            return -1;
+            return number;
         }
 
         /**
@@ -43,8 +67,20 @@ namespace StreamCompaction {
         int compactWithScan(int n, int *odata, const int *idata) {
 	        timer().startCpuTimer();
 	        // TODO
+            for (int i = 1; i < n; i++)
+            {
+                odata[i] = (idata[i - 1] == 0 ? 0 : 1) + odata[i - 1];
+            }
+            int number = odata[n - 1];
+            for (int i = 0; i < n; i++)
+            {
+                if (idata[i])
+                {
+                    odata[odata[i]] = idata[i];
+                }
+            }
 	        timer().endCpuTimer();
-            return -1;
+            return number;
         }
     }
 }
