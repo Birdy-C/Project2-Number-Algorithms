@@ -80,7 +80,7 @@ namespace StreamCompaction {
                 }
             }
 	        timer().endCpuTimer();
-            return number;
+            return number +(idata[n - 1] != 0);
         }
     }
 }
